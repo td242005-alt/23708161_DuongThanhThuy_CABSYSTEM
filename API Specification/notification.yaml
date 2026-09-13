@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Notification API
+  version: 1.0.0
+  description: CAB System - Notification APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Notification
+paths:
+  /api/notifications:
+    post:
+      tags: [Notification]
+      summary: Send notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationRequest'
+      responses:
+        '201':
+          description: Notification created
+
+  /api/users/{userId}/notifications:
+    get:
+      tags: [Notification]
+      summary: Get user notifications
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Notification list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+
+  /api/notifications/{notificationId}:
+    get:
+      tags: [Notification]
+      summary: Get notification detail
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: Notification detail
+
+  /api/notifications/{notificationId}/read:
+    patch:
+      tags: [Notification]
+      summary: Mark notification as read
+      parameters:
+        - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: Notification marked as read
+
+components:
+  parameters:
+    NotificationId:
+      name: notificationId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 4001
+  schemas:
+    NotificationRequest:
+      type: object
+      required: [userId, type, message]
+      properties:
+        userId:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: DRIVER_ASSIGNED
+        message:
+          type: string
+          example: Tai xe da nhan chuyen cua ban.
+    Notification:
+      allOf:
+        - $ref: '#/components/schemas/NotificationRequest'
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 4001
+            read:
+              type: boolean
+              example: false

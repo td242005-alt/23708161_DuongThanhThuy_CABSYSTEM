@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: CAB System - History & Rating API
+  version: 1.0.0
+  description: CAB System - Trip history and rating APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: History & Rating
+paths:
+  /api/users/{userId}/trip-history:
+    get:
+      tags: [History & Rating]
+      summary: Get customer trip history
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Trip history
+
+  /api/trips/{tripId}/history:
+    get:
+      tags: [History & Rating]
+      summary: Get trip history detail
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip detail
+
+  /api/trips/{tripId}/ratings:
+    post:
+      tags: [History & Rating]
+      summary: Rate completed trip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingRequest'
+      responses:
+        '201':
+          description: Rating created
+
+  /api/drivers/{driverId}/ratings:
+    get:
+      tags: [History & Rating]
+      summary: Get driver ratings
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Driver ratings
+
+components:
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 2001
+  schemas:
+    RatingRequest:
+      type: object
+      required: [customerId, rating]
+      properties:
+        customerId:
+          type: integer
+          example: 1
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Tai xe than thien va lai xe an toan.

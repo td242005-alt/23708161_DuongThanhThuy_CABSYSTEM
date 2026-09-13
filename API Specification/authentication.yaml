@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Authentication API
+  version: 1.0.0
+  description: CAB System - Account and authentication APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Authentication
+paths:
+  /api/auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register customer account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Account created successfully
+        '400':
+          description: Invalid request
+
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /api/users/{userId}:
+    get:
+      tags: [Authentication]
+      summary: Get user profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags: [Authentication]
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+      example: 1
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [fullName, phone, email, password]
+      properties:
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: "0901234567"
+        email:
+          type: string
+          format: email
+          example: nguyenvana@gmail.com
+        password:
+          type: string
+          format: password
+          example: "123456"
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: nguyenvana@gmail.com
+        password:
+          type: string
+          format: password
+          example: "123456"
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9.example.token
+        tokenType:
+          type: string
+          example: Bearer
+        user:
+          $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        fullName:
+          type: string
+          example: Nguyen Van A
+        phone:
+          type: string
+          example: "0901234567"
+        email:
+          type: string
+          format: email
+          example: nguyenvana@gmail.com
+        role:
+          type: string
+          enum: [CUSTOMER, DRIVER, OPERATOR, ADMIN]
+          example: CUSTOMER
+    UpdateUserRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          example: Nguyen Van B
+        phone:
+          type: string
+          example: "0909876543"
+        email:
+          type: string
+          format: email
+          example: nguyenvanb@gmail.com

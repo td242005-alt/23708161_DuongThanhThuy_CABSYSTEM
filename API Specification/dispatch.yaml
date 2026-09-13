@@ -1,0 +1,92 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Dispatch API
+  version: 1.0.0
+  description: CAB System - Driver matching and dispatch APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Dispatch
+paths:
+  /api/dispatch/bookings/{bookingId}/drivers:
+    get:
+      tags: [Dispatch]
+      summary: Find available drivers
+      parameters:
+        - $ref: '#/components/parameters/BookingId'
+      responses:
+        '200':
+          description: Available drivers
+
+  /api/dispatch/bookings/{bookingId}/assign:
+    post:
+      tags: [Dispatch]
+      summary: Assign driver
+      parameters:
+        - $ref: '#/components/parameters/BookingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignDriverRequest'
+      responses:
+        '200':
+          description: Driver assigned
+
+  /api/dispatch/{dispatchId}/accept:
+    post:
+      tags: [Dispatch]
+      summary: Accept dispatch request
+      parameters:
+        - $ref: '#/components/parameters/DispatchId'
+      responses:
+        '200':
+          description: Dispatch accepted
+
+  /api/dispatch/{dispatchId}/reject:
+    post:
+      tags: [Dispatch]
+      summary: Reject dispatch request
+      parameters:
+        - $ref: '#/components/parameters/DispatchId'
+      responses:
+        '200':
+          description: Dispatch rejected
+
+  /api/dispatch/bookings/{bookingId}/retry:
+    post:
+      tags: [Dispatch]
+      summary: Retry driver matching
+      parameters:
+        - $ref: '#/components/parameters/BookingId'
+      responses:
+        '200':
+          description: New driver search started
+
+components:
+  parameters:
+    BookingId:
+      name: bookingId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1001
+    DispatchId:
+      name: dispatchId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 5001
+  schemas:
+    AssignDriverRequest:
+      type: object
+      required: [driverId]
+      properties:
+        driverId:
+          type: integer
+          example: 101

@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Trip API
+  version: 1.0.0
+  description: CAB System - Trip management and tracking APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Trip
+paths:
+  /api/trips/{tripId}:
+    get:
+      tags: [Trip]
+      summary: Get trip detail
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+
+  /api/trips/{tripId}/status:
+    patch:
+      tags: [Trip]
+      summary: Update trip status
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripStatusRequest'
+      responses:
+        '200':
+          description: Trip status updated
+
+  /api/trips/{tripId}/location:
+    patch:
+      tags: [Trip]
+      summary: Update driver location
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationRequest'
+      responses:
+        '200':
+          description: Location updated
+
+  /api/trips/{tripId}/tracking:
+    get:
+      tags: [Trip]
+      summary: Track trip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Current trip location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationRequest'
+
+  /api/trips/{tripId}/complete:
+    post:
+      tags: [Trip]
+      summary: Complete trip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip completed
+
+components:
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 2001
+  schemas:
+    Trip:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2001
+        bookingId:
+          type: integer
+          example: 1001
+        customerId:
+          type: integer
+          example: 1
+        driverId:
+          type: integer
+          example: 101
+        status:
+          type: string
+          enum: [DRIVER_ASSIGNED, ARRIVED_PICKUP, PASSENGER_PICKED_UP, IN_PROGRESS, COMPLETED, CANCELLED]
+          example: IN_PROGRESS
+        fare:
+          type: number
+          example: 125000
+    TripStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [DRIVER_ASSIGNED, ARRIVED_PICKUP, PASSENGER_PICKED_UP, IN_PROGRESS, COMPLETED, CANCELLED]
+          example: ARRIVED_PICKUP
+    LocationRequest:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: number
+          example: 10.8231
+        longitude:
+          type: number
+          example: 106.6297

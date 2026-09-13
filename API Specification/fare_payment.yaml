@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Fare & Payment API
+  version: 1.0.0
+  description: CAB System - Fare calculation and payment APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Fare & Payment
+paths:
+  /api/fares/calculate:
+    post:
+      tags: [Fare & Payment]
+      summary: Calculate fare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FareRequest'
+      responses:
+        '200':
+          description: Fare calculated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FareResponse'
+
+  /api/trips/{tripId}/fare:
+    get:
+      tags: [Fare & Payment]
+      summary: Get trip fare
+      parameters:
+        - name: tripId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Trip fare
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FareResponse'
+
+  /api/payments:
+    post:
+      tags: [Fare & Payment]
+      summary: Create payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /api/payments/{paymentId}:
+    get:
+      tags: [Fare & Payment]
+      summary: Get payment detail
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Payment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /api/payments/{paymentId}/retry:
+    post:
+      tags: [Fare & Payment]
+      summary: Retry failed payment
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      responses:
+        '200':
+          description: Payment retry processed
+
+components:
+  parameters:
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 3001
+  schemas:
+    FareRequest:
+      type: object
+      required: [distanceKm, durationMinutes, vehicleType]
+      properties:
+        distanceKm:
+          type: number
+          example: 12.5
+        durationMinutes:
+          type: integer
+          example: 30
+        vehicleType:
+          type: string
+          enum: [MOTORBIKE, CAR]
+          example: CAR
+    FareResponse:
+      type: object
+      properties:
+        baseFare:
+          type: number
+          example: 20000
+        distanceFare:
+          type: number
+          example: 90000
+        timeFare:
+          type: number
+          example: 15000
+        totalFare:
+          type: number
+          example: 125000
+        currency:
+          type: string
+          example: VND
+    PaymentRequest:
+      type: object
+      required: [tripId, paymentMethod]
+      properties:
+        tripId:
+          type: integer
+          example: 2001
+        paymentMethod:
+          type: string
+          enum: [CASH, ELECTRONIC]
+          example: ELECTRONIC
+    Payment:
+      allOf:
+        - $ref: '#/components/schemas/PaymentRequest'
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 3001
+            amount:
+              type: number
+              example: 125000
+            status:
+              type: string
+              enum: [PENDING, SUCCESS, FAILED]
+              example: SUCCESS

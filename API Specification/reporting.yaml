@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Reporting API
+  version: 1.0.0
+  description: CAB System - Reporting APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Reporting
+paths:
+  /api/reports/overview:
+    get:
+      tags: [Reporting]
+      summary: Get overview report
+      responses:
+        '200':
+          description: Overview report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverviewReport'
+
+  /api/reports/trips:
+    get:
+      tags: [Reporting]
+      summary: Get trip statistics
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+      responses:
+        '200':
+          description: Trip report
+
+  /api/reports/revenue:
+    get:
+      tags: [Reporting]
+      summary: Get revenue report
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+      responses:
+        '200':
+          description: Revenue report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevenueReport'
+
+  /api/reports/drivers:
+    get:
+      tags: [Reporting]
+      summary: Get driver performance report
+      responses:
+        '200':
+          description: Driver performance report
+
+  /api/reports/completion-rate:
+    get:
+      tags: [Reporting]
+      summary: Get completion and cancellation rates
+      responses:
+        '200':
+          description: Completion rate report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompletionRateReport'
+
+components:
+  parameters:
+    FromDate:
+      name: from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      example: 2026-09-01
+    ToDate:
+      name: to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      example: 2026-09-30
+  schemas:
+    OverviewReport:
+      type: object
+      properties:
+        totalTrips:
+          type: integer
+          example: 1500
+        completedTrips:
+          type: integer
+          example: 1380
+        cancelledTrips:
+          type: integer
+          example: 120
+        totalRevenue:
+          type: number
+          example: 185000000
+        activeDrivers:
+          type: integer
+          example: 320
+    RevenueReport:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+          example: 65000000
+        currency:
+          type: string
+          example: VND
+    CompletionRateReport:
+      type: object
+      properties:
+        completionRate:
+          type: number
+          example: 92.0
+        cancellationRate:
+          type: number
+          example: 8.0

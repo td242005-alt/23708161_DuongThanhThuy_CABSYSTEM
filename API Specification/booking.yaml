@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Booking API
+  version: 1.0.0
+  description: CAB System - Ride booking APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Booking
+paths:
+  /api/bookings:
+    post:
+      tags: [Booking]
+      summary: Create booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      responses:
+        '201':
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+
+  /api/bookings/{bookingId}:
+    get:
+      tags: [Booking]
+      summary: Get booking detail
+      parameters:
+        - $ref: '#/components/parameters/BookingId'
+      responses:
+        '200':
+          description: Booking detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+    delete:
+      tags: [Booking]
+      summary: Cancel booking
+      parameters:
+        - $ref: '#/components/parameters/BookingId'
+      responses:
+        '200':
+          description: Booking cancelled
+
+  /api/users/{userId}/bookings:
+    get:
+      tags: [Booking]
+      summary: Get customer bookings
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Booking list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+
+components:
+  parameters:
+    BookingId:
+      name: bookingId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 1001
+  schemas:
+    CreateBookingRequest:
+      type: object
+      required: [customerId, pickupAddress, destinationAddress, vehicleType]
+      properties:
+        customerId:
+          type: integer
+          example: 1
+        pickupAddress:
+          type: string
+          example: 12 Nguyen Van Bao, Go Vap
+        destinationAddress:
+          type: string
+          example: Landmark 81
+        vehicleType:
+          type: string
+          enum: [MOTORBIKE, CAR]
+          example: CAR
+    Booking:
+      allOf:
+        - $ref: '#/components/schemas/CreateBookingRequest'
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 1001
+            status:
+              type: string
+              enum: [PENDING, SEARCHING_DRIVER, DRIVER_ASSIGNED, CANCELLED, COMPLETED]
+              example: SEARCHING_DRIVER

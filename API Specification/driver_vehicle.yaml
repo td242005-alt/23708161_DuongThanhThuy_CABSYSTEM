@@ -1,0 +1,149 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Driver & Vehicle API
+  version: 1.0.0
+  description: CAB System - Driver and vehicle management APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Driver & Vehicle
+paths:
+  /api/drivers:
+    post:
+      tags: [Driver & Vehicle]
+      summary: Create driver profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDriverRequest'
+      responses:
+        '201':
+          description: Driver created
+
+  /api/drivers/{driverId}:
+    get:
+      tags: [Driver & Vehicle]
+      summary: Get driver profile
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      responses:
+        '200':
+          description: Driver profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Driver'
+    put:
+      tags: [Driver & Vehicle]
+      summary: Update driver profile
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDriverRequest'
+      responses:
+        '200':
+          description: Driver updated
+
+  /api/drivers/{driverId}/status:
+    patch:
+      tags: [Driver & Vehicle]
+      summary: Update driver status
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverStatusRequest'
+      responses:
+        '200':
+          description: Driver status updated
+
+  /api/drivers/{driverId}/vehicles:
+    post:
+      tags: [Driver & Vehicle]
+      summary: Add vehicle
+      parameters:
+        - $ref: '#/components/parameters/DriverId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleRequest'
+      responses:
+        '201':
+          description: Vehicle added
+
+components:
+  parameters:
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 101
+  schemas:
+    CreateDriverRequest:
+      type: object
+      required: [userId, licenseNumber]
+      properties:
+        userId:
+          type: integer
+          example: 10
+        licenseNumber:
+          type: string
+          example: GPLX123456789
+        status:
+          type: string
+          enum: [AVAILABLE, BUSY, OFFLINE, SUSPENDED]
+          example: AVAILABLE
+    Driver:
+      allOf:
+        - $ref: '#/components/schemas/CreateDriverRequest'
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 101
+            averageRating:
+              type: number
+              example: 4.8
+    DriverStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [AVAILABLE, BUSY, OFFLINE, SUSPENDED]
+          example: AVAILABLE
+    VehicleRequest:
+      type: object
+      required: [plateNumber, vehicleType, brand, model]
+      properties:
+        plateNumber:
+          type: string
+          example: 51A-123.45
+        vehicleType:
+          type: string
+          enum: [MOTORBIKE, CAR]
+          example: CAR
+        brand:
+          type: string
+          example: Toyota
+        model:
+          type: string
+          example: Vios
+        color:
+          type: string
+          example: White

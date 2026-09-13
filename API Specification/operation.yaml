@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Operation API
+  version: 1.0.0
+  description: CAB System - Admin and operation management APIs
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Operation
+paths:
+  /api/admin/customers:
+    get:
+      tags: [Operation]
+      summary: Get customer list
+      responses:
+        '200':
+          description: Customer list
+
+  /api/admin/drivers:
+    get:
+      tags: [Operation]
+      summary: Get driver list
+      responses:
+        '200':
+          description: Driver list
+
+  /api/admin/vehicles:
+    get:
+      tags: [Operation]
+      summary: Get vehicle list
+      responses:
+        '200':
+          description: Vehicle list
+
+  /api/admin/trips:
+    get:
+      tags: [Operation]
+      summary: Get all trips
+      responses:
+        '200':
+          description: Trip list
+
+  /api/admin/trips/active:
+    get:
+      tags: [Operation]
+      summary: Get active trips
+      responses:
+        '200':
+          description: Active trips
+
+  /api/admin/transactions:
+    get:
+      tags: [Operation]
+      summary: Get transactions
+      responses:
+        '200':
+          description: Transaction list
+
+  /api/admin/users/{userId}/role:
+    patch:
+      tags: [Operation]
+      summary: Update user role
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+      responses:
+        '200':
+          description: Role updated
+
+components:
+  schemas:
+    RoleRequest:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [CUSTOMER, DRIVER, OPERATOR, ADMIN]
+          example: OPERATOR
